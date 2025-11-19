@@ -7,8 +7,7 @@
     
     <!--
       CSS EMBUTIDO PARA MANTER EM UM ARQUIVO ÚNICO
-    -->
-    <style>
+    --><style>
         /* Cor vermelha oficial da J&T Express */
         :root {
             --cor-vermelha-jt: #E2001A;
@@ -24,7 +23,7 @@
             color-adjust: exact;
         }
 
-        /* --- ÁREA DE CONTROLES (NOVO) --- */
+        /* --- ÁREA DE CONTROLES --- */
         .controles {
             width: 210mm;
             margin: 20px auto;
@@ -33,19 +32,29 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             box-sizing: border-box;
-            display: flex;
-            gap: 20px;
+            display: flex; /* Habilita flexbox para as colunas */
+            gap: 20px; /* Espaçamento entre as colunas */
+            align-items: flex-start;
         }
         
         .controles-coluna {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; 
+            flex-shrink: 0;
+            height: 100%; 
         }
+        
+        /* NOVO MODELO: Coluna de Códigos e Detalhes preenchem o espaço restante */
+        .col-auto { flex-basis: 0; flex-grow: 1; } 
+        /* Coluna de Botões tem largura fixa e não cresce */
+        .col-fixed-buttons { flex-basis: 180px; flex-grow: 0; } 
         
         .controles label {
             display: block;
             font-size: 14px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* Espaço menor entre label e input */
         }
 
         .controles textarea {
@@ -57,25 +66,47 @@
             padding: 10px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
+            flex-grow: 1; /* O textarea ocupa o espaço restante verticalmente */
+            margin-bottom: 10px;
+        }
+
+        /* Estilo unificado para inputs e selects */
+        .controles input.input-campo, .controles select.input-campo {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            min-height: 34px; 
+        }
+        
+        /* Ajuste específico para a Coluna de Botões */
+        .col-fixed-buttons {
+            justify-content: flex-start; 
         }
 
         .controles-botoes {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-top: 34px; /* Alinha com a caixa de texto */
+            width: 100%;
+            margin-top: 10px; 
+            padding-right: 5px; 
         }
         
         .controles button {
             background-color: var(--cor-vermelha-jt);
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 14px;
+            padding: 10px 15px; 
+            font-size: 13px;
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
+            width: 95%; /* Garante que os botões não ultrapassem 95% da largura disponível */
         }
         
         .controles button:hover {
@@ -87,16 +118,6 @@
         }
         .controles button#btnImprimir:hover {
             background-color: #0056b3;
-        }
-
-        .controles input.input-campo {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-bottom: 10px;
         }
 
 
@@ -112,7 +133,7 @@
             position: relative; /* Contexto para o conteúdo e marcas d'água */
         }
 
-        /* --- NOVO CABEÇALHO --- */
+        /* --- CABEÇALHO --- */
         .cabecalho {
             /* A imagem tem uma linha azul fina no topo */
             border-top: 4px solid #007bff; 
@@ -131,7 +152,7 @@
             border: 1px solid #333;
             padding: 8px;
             vertical-align: top;
-            height: 1%; /* Para forçar o alinhamento */
+            word-break: break-word; 
         }
 
         /* Linha 1 */
@@ -140,7 +161,7 @@
             vertical-align: middle;
         }
         
-        /* NOVO: Estilo para a imagem da logo */
+        /* Estilo para a imagem da logo */
         .logo-img {
             max-height: 40px; /* Ajusta a altura da logo */
             width: auto;
@@ -175,7 +196,17 @@
             font-weight: bold;
         }
 
-        /* Linha 3 */
+        /* Linha 3: Ajuste de larguras para evitar overflow no romaneio */
+        .tabela-cabecalho tr:nth-child(3) td:nth-child(1) { /* ID LACRE */
+            width: 25%; 
+        }
+        .tabela-cabecalho tr:nth-child(3) td:nth-child(2) { /* Natureza */
+            width: 45%; 
+        }
+        .tabela-cabecalho tr:nth-child(3) td:nth-child(3) { /* Quantidade / Placa */
+            width: 30%; 
+        }
+
         .label-cinza {
             color: #555;
             font-weight: bold;
@@ -205,6 +236,7 @@
             vertical-align: top;
             text-align: center;
             width: 50%;
+            word-break: break-word; 
         }
         .tabela-interna .label-cinza {
             border-bottom: 1px solid #333;
@@ -229,7 +261,7 @@
 
         /* --- CONTEÚDO PRINCIPAL --- */
         .conteudo {
-            position: relative; /* Necessário para o z-index da tabela funcionar */
+            position: relative; 
             z-index: 1;
         }
 
@@ -238,11 +270,11 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 160px; /* Tamanho grande */
+            font-size: 160px; 
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.07); /* Cinza bem claro e transparente */
-            z-index: 1; /* Fica atrás da tabela */
-            user-select: none; /* Não pode ser selecionado */
+            color: rgba(0, 0, 0, 0.07); 
+            z-index: 1; 
+            user-select: none; 
         }
 
         #wm-pagina1 {
@@ -250,34 +282,32 @@
         }
 
         #wm-pagina2 {
-            top: 1150px; /* Posição estimada para a segunda página */
+            top: 1150px; 
         }
 
         /* Tabela de códigos */
         .tabela-romaneio {
             width: 100%;
-            border-collapse: collapse; /* Tira espaço entre bordas */
-            table-layout: fixed; /* Força colunas a terem larguras iguais */
-            font-size: 9px; /* Fonte bem pequena como na imagem */
-            position: relative; /* Fica na frente da marca d'água */
+            border-collapse: collapse; 
+            table-layout: fixed; 
+            font-size: 9px; 
+            position: relative; 
             z-index: 2;
         }
 
         .tabela-romaneio th,
         .tabela-romaneio td {
-            border: 1px solid #ccc; /* Bordas cinzas finas */
+            border: 1px solid #ccc; 
             padding: 4px;
-            text-align: center; /* NOVO: Centraliza os códigos dos pedidos */
-            /* Quebra palavras longas (códigos) */
+            text-align: center; 
             word-wrap: break-word;
             overflow-wrap: break-word;
-            /* Garante que o conteúdo da célula não seja muito alto */
             height: 10px; 
         }
 
         /* Linhas zebradas (cor em linhas pares) */
         .tabela-romaneio tbody tr:nth-child(even) {
-            background-color: #f5f5f5; /* Cinza bem claro */
+            background-color: #f5f5f5; 
         }
         
         /* Placeholder para quando a tabela está vazia */
@@ -287,7 +317,7 @@
             font-size: 11px;
             padding: 20px;
             background-color: #fafafa;
-         }
+           }
 
         /* --- RODAPÉ --- */
         .rodape {
@@ -295,12 +325,12 @@
             font-size: 12px;
         }
 
-        /* NOVO: Tabela do Rodapé para Assinaturas */
+        /* Tabela do Rodapé para Assinaturas */
         .tabela-rodape {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            border-top: 2px solid #333; /* Linha preta grossa acima */
+            border-top: 2px solid #333; 
         }
         
         .tabela-rodape tr td {
@@ -308,7 +338,8 @@
             padding: 0;
             vertical-align: top;
             text-align: center;
-            width: 25%; /* 4 colunas */
+            width: 25%; 
+            word-break: break-word; 
         }
         
         .tabela-rodape .label-cinza-rodape {
@@ -320,47 +351,21 @@
         }
         
         .tabela-rodape .linha-assinatura-rodape {
-            height: 60px; /* Espaço para assinar */
+            height: 60px; 
             padding: 8px;
             font-size: 11px;
             text-align: left;
-            vertical-align: bottom; /* Para o DOCA N. */
+            vertical-align: bottom; 
         }
         
         .tabela-rodape .linha-assinatura-rodape strong {
             font-size: 11px;
         }
         
-        /* NOVO: Barra vermelha no final da página */
+        /* Barra vermelha no final da página */
         .barra-vermelha-final {
             border-top: 5px solid var(--cor-vermelha-jt); 
-            margin-top: 0px; /* Gruda na tabela de cima */
-        }
-        
-        
-        .rodape-barra-info {
-            /* NOVO: Borda vermelha conforme imagem */
-            border-top: 5px solid var(--cor-vermelha-jt); 
-            margin-top: 0px; /* Gruda na tabela de cima */
-            padding-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .logo-rodape {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--cor-vermelha-jt);
-        }
-        
-        .copyright {
-            text-align: center;
-            font-size: 10px;
-            color: #888;
-            margin-top: 5px;
+            margin-top: 0px; 
         }
         
         /* --- ESTILOS DE IMPRESSÃO --- */
@@ -391,7 +396,7 @@
             }
             
             .tabela-rodape {
-                page-break-before: avoid; /* Tenta não quebrar antes do rodapé */
+                page-break-before: avoid; 
             }
         }
 
@@ -402,27 +407,42 @@
     <!--
       ***************************************************
       * *
-      * ÁREA DE CONTROLES (NOVO)                      *
+      * ÁREA DE CONTROLES (LAYOUT REORGANIZADO E FIXO)  *
       * *
       ***************************************************
-    -->
-    <div class="controles">
-        <div class="controles-coluna" style="flex-basis: 50%;">
+    --><div class="controles">
+        <!-- Coluna 1: Códigos (Auto) --><div class="controles-coluna col-auto">
             <label for="inputCodigos">Cole seus códigos aqui (um por linha):</label>
             <textarea id="inputCodigos" placeholder="AM00123456789BR&#10;AM00123456790BR&#10;AM00123456791BR&#10;..."></textarea>
         </div>
         
-        <!-- COLUNA DE CAMPOS (SEM QTD TOTAL) -->
-        <div class="controles-coluna" style="flex-basis: 25%;">
-            <label for="inputLacre">ID Lacre/ID Viagem:</label>
+        <!-- Coluna 2: Detalhes (Auto) - Natureza, Destino, LACRE, PLACA --><div class="controles-coluna col-auto">
+            <label for="selectNatureza">Natureza:</label>
+            <select id="selectNatureza" class="input-campo">
+                <option value="DEVOLUÇÃO AO EMBARCADOR">DEVOLUÇÃO AO EMBARCADOR</option>
+                <option value="Devolução Insucessos">Devolução Insucessos</option>
+                <option value="Devolução Sobras/Faltas">Devolução Sobras/Faltas</option>
+                <option value="Devolução Recusas">Devolução Recusas</option>
+            </select>
+            
+            <label for="inputBaseDestino">Base Destino:</label>
+            <!-- Usando datalist para permitir seleção OU digitação livre --><input type="text" id="inputBaseDestino" class="input-campo" list="listaBasesDestino" value="MERCADO LIVRE - MELI" placeholder="Digite ou selecione a base">
+            <datalist id="listaBasesDestino">
+                <option value="MERCADO LIVRE - MELI">
+                <option value="Mercado Livre">
+                <option value="SHPX LOGISTICA LTDA - SHOPEE">
+                <option value="SHOPEE">
+            </datalist>
+
+            <!-- CAMPOS MOVIDOS PARA CÁ --><label for="inputLacre">ID Lacre/ID Viagem:</label>
             <input type="text" id="inputLacre" class="input-campo" placeholder="Opcional">
             
             <label for="inputPlaca">Placa Veículo:</label>
             <input type="text" id="inputPlaca" class="input-campo" placeholder="Opcional">
         </div>
 
-        <div class="controles-coluna" style="flex-basis: 25%;">
-             <div class="controles-botoes">
+        <!-- Coluna 3: Somente Botões (Largura Fixa) --><div class="controles-coluna col-fixed-buttons">
+            <div class="controles-botoes">
                 <button id="btnGerar" title="Preenche a tabela com os códigos colados">Gerar Romaneio</button>
                 <button id="btnImprimir" title="Abre a janela de impressão">Imprimir</button>
             </div>
@@ -433,20 +453,16 @@
     <!-- 
       ***************************************************
       * *
-      * MINUTA / ROMANEIO (A FOLHA)                   *
+      * MINUTA / ROMANEIO (A FOLHA)                     *
       * *
       ***************************************************
-    -->
-    <div class="pagina">
+    --><div class="pagina">
 
-        <!-- Início do Cabeçalho -->
-        <header class="cabecalho">
+        <!-- Início do Cabeçalho --><header class="cabecalho">
             <table class="tabela-cabecalho">
-                <!-- Linha 1: Logo, Título, Data -->
-                <tr>
+                <!-- Linha 1: Logo, Título, Data --><tr>
                     <td class="logo-cell">
-                        <!-- NOVO: Imagem da logo -->
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/J%26T_Express_logo.svg" alt="J&T Express Logo" class="logo-img"
+                        <!-- Imagem da logo --><img src="https://upload.wikimedia.org/wikipedia/commons/0/01/J%26T_Express_logo.svg" alt="J&T Express Logo" class="logo-img"
                              onerror="this.style.display='none'; this.parentElement.innerHTML = '<div style=\'font-size: 28px; font-weight: bold; color: #E2001A;\'>J&T Express</div>';">
                     </td>
                     <td class="titulo-cell">
@@ -457,25 +473,22 @@
                         <div class="data-valor" id="data-hoje"></div>
                     </td>
                 </tr>
-                <!-- Linha 2: Base Origem, Base Destino -->
-                <tr>
+                <!-- Linha 2: Base Origem, Base Destino (ATUALIZADA com ID) --><tr>
                     <td colspan="2">
                         <strong>Base Origem:</strong> <span class="texto-vermelho">SC GYN (GO GYN)</span>
                     </td>
                     <td>
-                        <strong>Base Destino:</strong> <span class="texto-vermelho">MERCADO LIVRE - MELI</span>
+                        <strong>Base Destino:</strong> <span class="texto-vermelho" id="headerBaseDestino">MERCADO LIVRE - MELI</span>
                     </td>
                 </tr>
-                <!-- Linha 3: Campos -->
-                <tr>
+                <!-- Linha 3: Campos (Natureza ATUALIZADA com ID) --><tr>
                     <td>
                         <div class="label-cinza">ID LACRE/ID VIAGEM</div>
                         <div class="valor-campo" id="headerLacre">&nbsp;</div>
                     </td>
-                    <!-- NOVO: Adicionado text-align: center; -->
                     <td style="text-align: center;"> 
                         <div class="label-cinza">Natureza:</div>
-                        <div class="valor-campo">DEVOLUÇÃO AO EMBARCADOR</div>
+                        <!-- NOVO ID para Natureza --><div class="valor-campo" id="headerNatureza">DEVOLUÇÃO AO EMBARCADOR</div>
                     </td>
                     <td>
                         <table class="tabela-interna">
@@ -484,8 +497,7 @@
                                 <td class="label-cinza">PLACA VEICULO</td>
                             </tr>
                             <tr>
-                                <!-- ID "headerQtd" será preenchido pelo script -->
-                                <td class="valor-campo texto-vermelho" id="headerQtd" style="font-size: 1.2em; font-weight: bold;">&nbsp;</td>
+                                <!-- ID "headerQtd" será preenchido pelo script --><td class="valor-campo texto-vermelho" id="headerQtd" style="font-size: 1.2em; font-weight: bold;">&nbsp;</td>
                                 <td class="valor-campo" id="headerPlaca">&nbsp;</td>
                             </tr>
                         </table>
@@ -493,28 +505,18 @@
                 </tr>
             </table>
             
-            <!-- CORREÇÃO: Fechando a tag <header> que estava aberta -->
-        </header>
-        <!-- Fim do Cabeçalho -->
-
-
-        <!-- 
+            <!-- Fechando a tag <header> --></header>
+        <!-- Fim do Cabeçalho --><!-- 
           ***************************************************
           * *
-          * CORREÇÃO: ADICIONADO O CONTEÚDO PRINCIPAL     *
-          * (Estava faltando)                             *
+          * CONTEÚDO PRINCIPAL: TABELA DE CÓDIGOS           *
           * *
           ***************************************************
-        -->
-        <main class="conteudo">
-            <!-- Marcas d'água -->
-            <div class="watermark" id="wm-pagina1">Página 1</div>
+        --><main class="conteudo">
+            <!-- Marcas d'água --><div class="watermark" id="wm-pagina1">Página 1</div>
             <div class="watermark" id="wm-pagina2">Página 2</div>
 
-            <!-- Tabela de Códigos -->
-            <table class="tabela-romaneio">
-                <!-- O JavaScript vai preencher este corpo -->
-                <!-- CORREÇÃO: Este é o ID que o script estava procurando -->
+            <!-- Tabela de Códigos --><table class="tabela-romaneio">
                 <tbody id="tabela-corpo">
                     <tr class="placeholder">
                         <td colspan="4">Cole os códigos na caixa acima e clique em "Gerar Romaneio"</td>
@@ -522,21 +524,14 @@
                 </tbody>
             </table>
         </main>
-        <!-- Fim do Conteúdo Principal -->
-
-
-        <!-- 
+        <!-- Fim do Conteúdo Principal --><!-- 
           ***************************************************
           * *
-          * CORREÇÃO: O RODAPÉ FOI RECONSTRUÍDO         *
+          * RODAPÉ                                          *
           * *
           ***************************************************
-        -->
-        <!-- Início do Rodapé -->
-        <!-- CORREÇÃO: A tag <footer> estava fechada (</footer>) sem nunca ter sido aberta -->
-        <footer class="rodape">
-            <!-- Tabela de Assinaturas (Rodapé) -->
-            <table class="tabela-rodape">
+        --><footer class="rodape">
+            <!-- Tabela de Assinaturas (Rodapé) --><table class="tabela-rodape">
                 <tr>
                     <td class="label-cinza-rodape">Assinatura Emitente</td>
                     <td class="label-cinza-rodape">Assinatura Motorista:</td>
@@ -551,86 +546,78 @@
                 </tr>
             </table>
 
-            <!-- NOVO: Adicionada a barra vermelha final -->
-            <!-- CORREÇÃO: Movida para dentro do footer -->
-            <div class="barra-vermelha-final"></div>
-
-            <!-- 
-                SEÇÃO REMOVIDA CONFORME SOLICITADO
-                
-            <div class="rodape-barra-info">
-                <div class="logo-rodape">J&T Express</div>
-                <div>Página 1 de 2</div>
-                <div>SGR-F-OPER-014</div>
-            </div>
-
-            <div class="copyright">
-                J&T Express 2023. Todos os direitos reservados.
-            </div>
-            -->
-            
+            <!-- Barra vermelha final --><div class="barra-vermelha-final"></div>
         </footer>
-        <!-- Fim do Rodapé -->
-
-    </div> <!-- Fim da .pagina -->
-
-    <!--
+        <!-- Fim do Rodapé --></div> <!-- Fim da .pagina --><!--
       ***************************************************
       * *
-      * SCRIPT JAVASCRIPT (NOVO)                      *
+      * SCRIPT JAVASCRIPT (LÓGICA INALTERADA)           *
       * *
       ***************************************************
-    -->
-    <script>
+    --><script>
+        // Caractere de espaço que não quebra linha (&nbsp; em HTML)
+        const nbsp = '\u00A0'; 
+
+        // --- Função para sincronizar os campos do cabeçalho com os controles ---
+        function atualizarCabecalho() {
+            // Novas leituras
+            const selectNatureza = document.getElementById('selectNatureza').value;
+            const inputBaseDestino = document.getElementById('inputBaseDestino').value;
+
+            // Leituras existentes
+            const inputLacre = document.getElementById('inputLacre').value;
+            const inputPlaca = document.getElementById('inputPlaca').value;
+            
+            // Conta a quantidade total de códigos
+            const totalCodigos = document.getElementById('inputCodigos').value.split('\n').filter(Boolean).length;
+            
+            // Atualiza o Romaneio
+            document.getElementById('headerNatureza').textContent = selectNatureza || nbsp;
+            document.getElementById('headerBaseDestino').textContent = inputBaseDestino || nbsp;
+            document.getElementById('headerLacre').textContent = inputLacre || nbsp;
+            document.getElementById('headerPlaca').textContent = inputPlaca || nbsp;
+            document.getElementById('headerQtd').textContent = totalCodigos > 0 ? totalCodigos : nbsp;  
+        }
+
+
         // --- Função para gerar a tabela ---
         function gerarTabela() {
             const input = document.getElementById('inputCodigos');
             const tbody = document.getElementById('tabela-corpo');
             
-            // 1. Pega os códigos, separa por linha e remove linhas vazias
+            // Pega os códigos, separa por linha e remove linhas vazias
             const codigos = input.value.split('\n').filter(Boolean);
-            
-            // NOVO: Conta o total de códigos
             const totalCodigos = codigos.length;
             
-            // 2. Limpa a tabela atual
+            // Limpa a tabela atual
             tbody.innerHTML = '';
             
             if (totalCodigos === 0) {
                 tbody.innerHTML = `
                     <tr class="placeholder">
-                        <td colspan="4">Nenhum código foi inserido. Cole os códigos na caixa de texto e tente novamente.</td>
+                        <td colspan="4">Nenhum código foi inserido. Cole os códigos na caixa de texto e clique em "Gerar Romaneio"</td>
                     </tr>`;
-                /* Não saia da função aqui, pois ainda queremos preencher o cabeçalho */
+            } else {
+                // Itera sobre os códigos de 4 em 4 para criar as linhas
+                for (let i = 0; i < totalCodigos; i += 4) {
+                    // Cria uma nova linha <tr>
+                    const tr = document.createElement('tr');
+                    
+                    // Adiciona as 4 colunas <td>
+                    tr.innerHTML = `
+                        <td>${(codigos[i] || nbsp)}</td>
+                        <td>${(codigos[i + 1] || nbsp)}</td>
+                        <td>${(codigos[i + 2] || nbsp)}</td>
+                        <td>${(codigos[i + 3] || nbsp)}</td>
+                    `;
+                    
+                    // Adiciona a linha completa ao corpo da tabela
+                    tbody.appendChild(tr);
+                }
             }
             
-            // 3. Itera sobre os códigos de 4 em 4 para criar as linhas
-            for (let i = 0; i < totalCodigos; i += 4) {
-                // Cria uma nova linha <tr>
-                const tr = document.createElement('tr');
-                
-                // Adiciona as 4 colunas <td>
-                // (codigos[i] || '') garante que se a linha estiver incompleta, ele preenche com vazio
-                tr.innerHTML = `
-                    <td>${(codigos[i] || '')}</td>
-                    <td>${(codigos[i + 1] || '')}</td>
-                    <td>${(codigos[i + 2] || '')}</td>
-                    <td>${(codigos[i + 3] || '')}</td>
-                `;
-                
-                // 4. Adiciona a linha completa ao corpo da tabela
-                tbody.appendChild(tr);
-            }
-            
-            // --- ATUALIZADO: Atualiza o cabeçalho ---
-            const inputLacre = document.getElementById('inputLacre').value;
-            const inputPlaca = document.getElementById('inputPlaca').value;
-            const nbsp = '\u00A0'; // É um &nbsp; (espaço que não quebra a linha)
-            
-            // NOVO: Usa totalCodigos para a quantidade
-            document.getElementById('headerQtd').textContent = totalCodigos > 0 ? totalCodigos : nbsp; 
-            document.getElementById('headerLacre').textContent = inputLacre || nbsp;
-            document.getElementById('headerPlaca').textContent = inputPlaca || nbsp;
+            // ATUALIZAÇÃO: Sincroniza o cabeçalho
+            atualizarCabecalho();
         }
         
         // --- Função para imprimir ---
@@ -646,13 +633,26 @@
             const ano = hoje.getFullYear();
             document.getElementById('data-hoje').textContent = `${dia}/${mes}/${ano}`;
         }
-
-        // --- Adiciona os 'escutadores' de evento nos botões ---
-        document.getElementById('btnGerar').addEventListener('click', gerarTabela);
-        document.getElementById('btnImprimir').addEventListener('click', imprimirPagina);
         
-        // --- Carrega a data de hoje quando a página abre ---
-        document.addEventListener('DOMContentLoaded', carregarDataHoje);
+        // --- Inicialização da Aplicação ---
+        function init() {
+            carregarDataHoje();
+            // Preenche o cabeçalho com os valores padrão ao carregar a página
+            atualizarCabecalho(); 
+            
+            // Adiciona listeners para Natureza e Base Destino para atualizar dinamicamente
+            document.getElementById('selectNatureza').addEventListener('change', atualizarCabecalho);
+            document.getElementById('inputBaseDestino').addEventListener('input', atualizarCabecalho);
+            document.getElementById('inputLacre').addEventListener('input', atualizarCabecalho);
+            document.getElementById('inputPlaca').addEventListener('input', atualizarCabecalho);
+            
+            // Adiciona listeners para os botões existentes
+            document.getElementById('btnGerar').addEventListener('click', gerarTabela);
+            document.getElementById('btnImprimir').addEventListener('click', imprimirPagina);
+        }
+
+        // Inicia a aplicação após o carregamento do DOM
+        document.addEventListener('DOMContentLoaded', init);
         
     </script>
 
