@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Romaneio Devolução</title>
+    
+    <!--
+      CSS EMBUTIDO PARA MANTER EM UM ARQUIVO ÚNICO
+    -->
+    <style>
+        /* Cor vermelha oficial da J&T Express */
+        :root {
+            --cor-vermelha-jt: #E2001A;
+        }
+
+        /* Configurações gerais da página */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Fundo cinza para destacar a folha */
+            margin: 0;
+            padding: 20px;
+            -webkit-print-color-adjust: exact; /* Força impressão correta no Chrome */
+            color-adjust: exact;
+        }
+
+        /* --- ÁREA DE CONTROLES (NOVO) --- */
+        .controles {
+            width: 210mm;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-sizing: border-box;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .controles-coluna {
+            flex: 1;
+        }
+        
+        .controles label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .controles textarea {
+            width: 100%;
+            height: 200px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+        }
+
+        .controles-botoes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 34px; /* Alinha com a caixa de texto */
+        }
+        
+        .controles button {
+            background-color: var(--cor-vermelha-jt);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .controles button:hover {
+            background-color: #b00015;
+        }
+
+        .controles button#btnImprimir {
+            background-color: #007bff;
+        }
+        .controles button#btnImprimir:hover {
+            background-color: #0056b3;
+        }
+
+        .controles input.input-campo {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+
+        /* A "folha" de papel A4 */
+        .pagina {
+            width: 210mm; /* Largura A4 */
+            min-height: 297mm; /* Altura A4 (min-height para crescer se necessário) */
+            margin: 20px auto; /* Centraliza a folha */
+            padding: 15mm;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; /* Garante que o padding não altere a largura */
+            position: relative; /* Contexto para o conteúdo e marcas d'água */
+        }
+
+        /* --- NOVO CABEÇALHO --- */
+        .cabecalho {
+            /* A imagem tem uma linha azul fina no topo */
+            border-top: 4px solid #007bff; 
+            border-bottom: 1px solid #333;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .tabela-cabecalho {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .tabela-cabecalho tr td {
+            border: 1px solid #333;
+            padding: 8px;
+            vertical-align: top;
+            height: 1%; /* Para forçar o alinhamento */
+        }
+
+        /* Linha 1 */
+        .tabela-cabecalho .logo-cell {
+            width: 25%;
+            vertical-align: middle;
+        }
+        
+        /* NOVO: Estilo para a imagem da logo */
+        .logo-img {
+            max-height: 40px; /* Ajusta a altura da logo */
+            width: auto;
+        }
+        
+        .tabela-cabecalho .titulo-cell {
+            width: 45%;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .titulo-cell h1 {
+            font-size: 20px;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .tabela-cabecalho .data-cell {
+            width: 30%;
+            text-align: center;
+            vertical-align: top;
+            font-weight: bold;
+        }
+        .data-cell .data-valor {
+            font-size: 1.5em; /* 07/11/2025 está grande na imagem */
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* Linha 2 */
+        .texto-vermelho {
+            color: var(--cor-vermelha-jt);
+            font-weight: bold;
+        }
+
+        /* Linha 3 */
+        .label-cinza {
+            color: #555;
+            font-weight: bold;
+            font-size: 10px;
+            background-color: #f0f0f0;
+            padding: 4px;
+            text-align: center;
+        }
+        
+        .valor-campo {
+            font-size: 12px;
+            font-weight: bold;
+            padding-top: 10px;
+            min-height: 20px;
+        }
+        
+        /* Tabela interna para Qtd e Placa */
+        .tabela-interna {
+            width: 100%;
+            border-collapse: collapse;
+            margin: -8px; /* Remove o padding da célula pai */
+        }
+        
+        .tabela-interna tr td {
+            border: 1px solid #333;
+            padding: 0;
+            vertical-align: top;
+            text-align: center;
+            width: 50%;
+        }
+        .tabela-interna .label-cinza {
+            border-bottom: 1px solid #333;
+            border-top: 0;
+            border-left: 0;
+        }
+        .tabela-interna .valor-campo {
+            padding: 8px; /* Adiciona padding de volta */
+            min-height: 20px;
+            border-bottom: 0;
+            border-left: 0;
+        }
+        
+        .tabela-interna tr td:first-child {
+             border-left: 1px solid #333;
+        }
+        
+        .tabela-interna tr td:last-child {
+            border-right: 0;
+        }
+
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .conteudo {
+            position: relative; /* Necessário para o z-index da tabela funcionar */
+            z-index: 1;
+        }
+
+        /* Marcas d'água */
+        .watermark {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 160px; /* Tamanho grande */
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.07); /* Cinza bem claro e transparente */
+            z-index: 1; /* Fica atrás da tabela */
+            user-select: none; /* Não pode ser selecionado */
+        }
+
+        #wm-pagina1 {
+            top: 250px;
+        }
+
+        #wm-pagina2 {
+            top: 1150px; /* Posição estimada para a segunda página */
+        }
+
+        /* Tabela de códigos */
+        .tabela-romaneio {
+            width: 100%;
+            border-collapse: collapse; /* Tira espaço entre bordas */
+            table-layout: fixed; /* Força colunas a terem larguras iguais */
+            font-size: 9px; /* Fonte bem pequena como na imagem */
+            position: relative; /* Fica na frente da marca d'água */
+            z-index: 2;
+        }
+
+        .tabela-romaneio th,
+        .tabela-romaneio td {
+            border: 1px solid #ccc; /* Bordas cinzas finas */
+            padding: 4px;
+            text-align: center; /* NOVO: Centraliza os códigos dos pedidos */
+            /* Quebra palavras longas (códigos) */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            /* Garante que o conteúdo da célula não seja muito alto */
+            height: 10px; 
+        }
+
+        /* Linhas zebradas (cor em linhas pares) */
+        .tabela-romaneio tbody tr:nth-child(even) {
+            background-color: #f5f5f5; /* Cinza bem claro */
+        }
+        
+        /* Placeholder para quando a tabela está vazia */
+         .tabela-romaneio tbody tr.placeholder td {
+            text-align: center;
+            color: #999;
+            font-size: 11px;
+            padding: 20px;
+            background-color: #fafafa;
+         }
+
+        /* --- RODAPÉ --- */
+        .rodape {
+            margin-top: 30px;
+            font-size: 12px;
+        }
+
+        /* NOVO: Tabela do Rodapé para Assinaturas */
+        .tabela-rodape {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-top: 2px solid #333; /* Linha preta grossa acima */
+        }
+        
+        .tabela-rodape tr td {
+            border: 1px solid #333;
+            padding: 0;
+            vertical-align: top;
+            text-align: center;
+            width: 25%; /* 4 colunas */
+        }
+        
+        .tabela-rodape .label-cinza-rodape {
+            font-size: 10px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .tabela-rodape .linha-assinatura-rodape {
+            height: 60px; /* Espaço para assinar */
+            padding: 8px;
+            font-size: 11px;
+            text-align: left;
+            vertical-align: bottom; /* Para o DOCA N. */
+        }
+        
+        .tabela-rodape .linha-assinatura-rodape strong {
+            font-size: 11px;
+        }
+        
+        /* NOVO: Barra vermelha no final da página */
+        .barra-vermelha-final {
+            border-top: 5px solid var(--cor-vermelha-jt); 
+            margin-top: 0px; /* Gruda na tabela de cima */
+        }
+        
+        
+        .rodape-barra-info {
+            /* NOVO: Borda vermelha conforme imagem */
+            border-top: 5px solid var(--cor-vermelha-jt); 
+            margin-top: 0px; /* Gruda na tabela de cima */
+            padding-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .logo-rodape {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--cor-vermelha-jt);
+        }
+        
+        .copyright {
+            text-align: center;
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        /* --- ESTILOS DE IMPRESSÃO --- */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            /* Esconde a área de controles ao imprimir */
+            .controles {
+                display: none;
+            }
+            
+            /* Remove sombra e margens da página ao imprimir */
+            .pagina {
+                width: 100%;
+                min-height: 0;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+            
+            /* Evita quebras de página dentro de uma linha da tabela */
+            .tabela-romaneio tr {
+                page-break-inside: avoid;
+            }
+            
+            .tabela-rodape {
+                page-break-before: avoid; /* Tenta não quebrar antes do rodapé */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!--
+      ***************************************************
+      * *
+      * ÁREA DE CONTROLES (NOVO)                      *
+      * *
+      ***************************************************
+    -->
+    <div class="controles">
+        <div class="controles-coluna" style="flex-basis: 50%;">
+            <label for="inputCodigos">Cole seus códigos aqui (um por linha):</label>
+            <textarea id="inputCodigos" placeholder="AM00123456789BR&#10;AM00123456790BR&#10;AM00123456791BR&#10;..."></textarea>
+        </div>
+        
+        <!-- COLUNA DE CAMPOS (SEM QTD TOTAL) -->
+        <div class="controles-coluna" style="flex-basis: 25%;">
+            <label for="inputLacre">ID Lacre/ID Viagem:</label>
+            <input type="text" id="inputLacre" class="input-campo" placeholder="Opcional">
+            
+            <label for="inputPlaca">Placa Veículo:</label>
+            <input type="text" id="inputPlaca" class="input-campo" placeholder="Opcional">
+        </div>
+
+        <div class="controles-coluna" style="flex-basis: 25%;">
+             <div class="controles-botoes">
+                <button id="btnGerar" title="Preenche a tabela com os códigos colados">Gerar Romaneio</button>
+                <button id="btnImprimir" title="Abre a janela de impressão">Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 
+      ***************************************************
+      * *
+      * MINUTA / ROMANEIO (A FOLHA)                   *
+      * *
+      ***************************************************
+    -->
+    <div class="pagina">
+
+        <!-- Início do Cabeçalho -->
+        <header class="cabecalho">
+            <table class="tabela-cabecalho">
+                <!-- Linha 1: Logo, Título, Data -->
+                <tr>
+                    <td class="logo-cell">
+                        <!-- NOVO: Imagem da logo -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/J%26T_Express_logo.svg" alt="J&T Express Logo" class="logo-img"
+                             onerror="this.style.display='none'; this.parentElement.innerHTML = '<div style=\'font-size: 28px; font-weight: bold; color: #E2001A;\'>J&T Express</div>';">
+                    </td>
+                    <td class="titulo-cell">
+                        <h1>ROMANEIO DEVOLUÇÃO</h1>
+                    </td>
+                    <td class="data-cell">
+                        <div>DATA</div>
+                        <div class="data-valor" id="data-hoje"></div>
+                    </td>
+                </tr>
+                <!-- Linha 2: Base Origem, Base Destino -->
+                <tr>
+                    <td colspan="2">
+                        <strong>Base Origem:</strong> <span class="texto-vermelho">SC GYN (GO GYN)</span>
+                    </td>
+                    <td>
+                        <strong>Base Destino:</strong> <span class="texto-vermelho">MERCADO LIVRE - MELI</span>
+                    </td>
+                </tr>
+                <!-- Linha 3: Campos -->
+                <tr>
+                    <td>
+                        <div class="label-cinza">ID LACRE/ID VIAGEM</div>
+                        <div class="valor-campo" id="headerLacre">&nbsp;</div>
+                    </td>
+                    <!-- NOVO: Adicionado text-align: center; -->
+                    <td style="text-align: center;"> 
+                        <div class="label-cinza">Natureza:</div>
+                        <div class="valor-campo">DEVOLUÇÃO AO EMBARCADOR</div>
+                    </td>
+                    <td>
+                        <table class="tabela-interna">
+                            <tr>
+                                <td class="label-cinza">Quantidade Total:</td>
+                                <td class="label-cinza">PLACA VEICULO</td>
+                            </tr>
+                            <tr>
+                                <!-- ID "headerQtd" será preenchido pelo script -->
+                                <td class="valor-campo texto-vermelho" id="headerQtd" style="font-size: 1.2em; font-weight: bold;">&nbsp;</td>
+                                <td class="valor-campo" id="headerPlaca">&nbsp;</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            
+            <!-- CORREÇÃO: Fechando a tag <header> que estava aberta -->
+        </header>
+        <!-- Fim do Cabeçalho -->
+
+
+        <!-- 
+          ***************************************************
+          * *
+          * CORREÇÃO: ADICIONADO O CONTEÚDO PRINCIPAL     *
+          * (Estava faltando)                             *
+          * *
+          ***************************************************
+        -->
+        <main class="conteudo">
+            <!-- Marcas d'água -->
+            <div class="watermark" id="wm-pagina1">Página 1</div>
+            <div class="watermark" id="wm-pagina2">Página 2</div>
+
+            <!-- Tabela de Códigos -->
+            <table class="tabela-romaneio">
+                <!-- O JavaScript vai preencher este corpo -->
+                <!-- CORREÇÃO: Este é o ID que o script estava procurando -->
+                <tbody id="tabela-corpo">
+                    <tr class="placeholder">
+                        <td colspan="4">Cole os códigos na caixa acima e clique em "Gerar Romaneio"</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+        <!-- Fim do Conteúdo Principal -->
+
+
+        <!-- 
+          ***************************************************
+          * *
+          * CORREÇÃO: O RODAPÉ FOI RECONSTRUÍDO         *
+          * *
+          ***************************************************
+        -->
+        <!-- Início do Rodapé -->
+        <!-- CORREÇÃO: A tag <footer> estava fechada (</footer>) sem nunca ter sido aberta -->
+        <footer class="rodape">
+            <!-- Tabela de Assinaturas (Rodapé) -->
+            <table class="tabela-rodape">
+                <tr>
+                    <td class="label-cinza-rodape">Assinatura Emitente</td>
+                    <td class="label-cinza-rodape">Assinatura Motorista:</td>
+                    <td class="label-cinza-rodape">Nome Recebedor:</td>
+                    <td class="label-cinza-rodape">Data recebimento:</td>
+                </tr>
+                <tr>
+                    <td class="linha-assinatura-rodape">&nbsp;</td>
+                    <td class="linha-assinatura-rodape">&nbsp;</td>
+                    <td class="linha-assinatura-rodape"><strong>DOCA N.:</strong> ______________</td>
+                    <td class="linha-assinatura-rodape">&nbsp;</td>
+                </tr>
+            </table>
+
+            <!-- NOVO: Adicionada a barra vermelha final -->
+            <!-- CORREÇÃO: Movida para dentro do footer -->
+            <div class="barra-vermelha-final"></div>
+
+            <!-- 
+                SEÇÃO REMOVIDA CONFORME SOLICITADO
+                
+            <div class="rodape-barra-info">
+                <div class="logo-rodape">J&T Express</div>
+                <div>Página 1 de 2</div>
+                <div>SGR-F-OPER-014</div>
+            </div>
+
+            <div class="copyright">
+                J&T Express 2023. Todos os direitos reservados.
+            </div>
+            -->
+            
+        </footer>
+        <!-- Fim do Rodapé -->
+
+    </div> <!-- Fim da .pagina -->
+
+    <!--
+      ***************************************************
+      * *
+      * SCRIPT JAVASCRIPT (NOVO)                      *
+      * *
+      ***************************************************
+    -->
+    <script>
+        // --- Função para gerar a tabela ---
+        function gerarTabela() {
+            const input = document.getElementById('inputCodigos');
+            const tbody = document.getElementById('tabela-corpo');
+            
+            // 1. Pega os códigos, separa por linha e remove linhas vazias
+            const codigos = input.value.split('\n').filter(Boolean);
+            
+            // NOVO: Conta o total de códigos
+            const totalCodigos = codigos.length;
+            
+            // 2. Limpa a tabela atual
+            tbody.innerHTML = '';
+            
+            if (totalCodigos === 0) {
+                tbody.innerHTML = `
+                    <tr class="placeholder">
+                        <td colspan="4">Nenhum código foi inserido. Cole os códigos na caixa de texto e tente novamente.</td>
+                    </tr>`;
+                /* Não saia da função aqui, pois ainda queremos preencher o cabeçalho */
+            }
+            
+            // 3. Itera sobre os códigos de 4 em 4 para criar as linhas
+            for (let i = 0; i < totalCodigos; i += 4) {
+                // Cria uma nova linha <tr>
+                const tr = document.createElement('tr');
+                
+                // Adiciona as 4 colunas <td>
+                // (codigos[i] || '') garante que se a linha estiver incompleta, ele preenche com vazio
+                tr.innerHTML = `
+                    <td>${(codigos[i] || '')}</td>
+                    <td>${(codigos[i + 1] || '')}</td>
+                    <td>${(codigos[i + 2] || '')}</td>
+                    <td>${(codigos[i + 3] || '')}</td>
+                `;
+                
+                // 4. Adiciona a linha completa ao corpo da tabela
+                tbody.appendChild(tr);
+            }
+            
+            // --- ATUALIZADO: Atualiza o cabeçalho ---
+            const inputLacre = document.getElementById('inputLacre').value;
+            const inputPlaca = document.getElementById('inputPlaca').value;
+            const nbsp = '\u00A0'; // É um &nbsp; (espaço que não quebra a linha)
+            
+            // NOVO: Usa totalCodigos para a quantidade
+            document.getElementById('headerQtd').textContent = totalCodigos > 0 ? totalCodigos : nbsp; 
+            document.getElementById('headerLacre').textContent = inputLacre || nbsp;
+            document.getElementById('headerPlaca').textContent = inputPlaca || nbsp;
+        }
+        
+        // --- Função para imprimir ---
+        function imprimirPagina() {
+            window.print();
+        }
+        
+        // --- Função para formatar a data de hoje ---
+        function carregarDataHoje() {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // Meses começam do 0
+            const ano = hoje.getFullYear();
+            document.getElementById('data-hoje').textContent = `${dia}/${mes}/${ano}`;
+        }
+
+        // --- Adiciona os 'escutadores' de evento nos botões ---
+        document.getElementById('btnGerar').addEventListener('click', gerarTabela);
+        document.getElementById('btnImprimir').addEventListener('click', imprimirPagina);
+        
+        // --- Carrega a data de hoje quando a página abre ---
+        document.addEventListener('DOMContentLoaded', carregarDataHoje);
+        
+    </script>
+
+</body>
+</html>
