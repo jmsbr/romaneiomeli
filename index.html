@@ -7,7 +7,8 @@
     
     <!--
       CSS EMBUTIDO PARA MANTER EM UM ARQUIVO ÚNICO
-    --><style>
+    -->
+    <style>
         /* Cor vermelha oficial da J&T Express */
         :root {
             --cor-vermelha-jt: #E2001A;
@@ -410,13 +411,20 @@
       * ÁREA DE CONTROLES (LAYOUT REORGANIZADO E FIXO)  *
       * *
       ***************************************************
-    --><div class="controles">
-        <!-- Coluna 1: Códigos (Auto) --><div class="controles-coluna col-auto">
+    -->
+    <div class="controles">
+        <!-- Coluna 1: Códigos (Auto) -->
+        <div class="controles-coluna col-auto">
             <label for="inputCodigos">Cole seus códigos aqui (um por linha):</label>
             <textarea id="inputCodigos" placeholder="AM00123456789BR&#10;AM00123456790BR&#10;AM00123456791BR&#10;..."></textarea>
         </div>
         
-        <!-- Coluna 2: Detalhes (Auto) - Natureza, Destino, LACRE, PLACA --><div class="controles-coluna col-auto">
+        <!-- Coluna 2: Detalhes (Auto) - Natureza, Destino, LACRE, PLACA -->
+        <div class="controles-coluna col-auto">
+            <!-- CAMPO DATA ADICIONADO AQUI -->
+            <label for="inputData">Data do Romaneio:</label>
+            <input type="date" id="inputData" class="input-campo">
+
             <label for="selectNatureza">Natureza:</label>
             <select id="selectNatureza" class="input-campo">
                 <option value="DEVOLUÇÃO AO EMBARCADOR">DEVOLUÇÃO AO EMBARCADOR</option>
@@ -426,7 +434,8 @@
             </select>
             
             <label for="inputBaseDestino">Base Destino:</label>
-            <!-- Usando datalist para permitir seleção OU digitação livre --><input type="text" id="inputBaseDestino" class="input-campo" list="listaBasesDestino" value="MERCADO LIVRE - MELI" placeholder="Digite ou selecione a base">
+            <!-- Usando datalist para permitir seleção OU digitação livre -->
+            <input type="text" id="inputBaseDestino" class="input-campo" list="listaBasesDestino" value="MERCADO LIVRE - MELI" placeholder="Digite ou selecione a base">
             <datalist id="listaBasesDestino">
                 <option value="MERCADO LIVRE - MELI">
                 <option value="Mercado Livre">
@@ -434,14 +443,16 @@
                 <option value="SHOPEE">
             </datalist>
 
-            <!-- CAMPOS MOVIDOS PARA CÁ --><label for="inputLacre">ID Lacre/ID Viagem:</label>
+            <!-- CAMPOS MOVIDOS PARA CÁ -->
+            <label for="inputLacre">ID Lacre/ID Viagem:</label>
             <input type="text" id="inputLacre" class="input-campo" placeholder="Opcional">
             
             <label for="inputPlaca">Placa Veículo:</label>
             <input type="text" id="inputPlaca" class="input-campo" placeholder="Opcional">
         </div>
 
-        <!-- Coluna 3: Somente Botões (Largura Fixa) --><div class="controles-coluna col-fixed-buttons">
+        <!-- Coluna 3: Somente Botões (Largura Fixa) -->
+        <div class="controles-coluna col-fixed-buttons">
             <div class="controles-botoes">
                 <button id="btnGerar" title="Preenche a tabela com os códigos colados">Gerar Romaneio</button>
                 <button id="btnImprimir" title="Abre a janela de impressão">Imprimir</button>
@@ -456,13 +467,17 @@
       * MINUTA / ROMANEIO (A FOLHA)                     *
       * *
       ***************************************************
-    --><div class="pagina">
+    -->
+    <div class="pagina">
 
-        <!-- Início do Cabeçalho --><header class="cabecalho">
+        <!-- Início do Cabeçalho -->
+        <header class="cabecalho">
             <table class="tabela-cabecalho">
-                <!-- Linha 1: Logo, Título, Data --><tr>
+                <!-- Linha 1: Logo, Título, Data -->
+                <tr>
                     <td class="logo-cell">
-                        <!-- Imagem da logo --><img src="https://upload.wikimedia.org/wikipedia/commons/0/01/J%26T_Express_logo.svg" alt="J&T Express Logo" class="logo-img"
+                        <!-- Imagem da logo -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/J%26T_Express_logo.svg" alt="J&T Express Logo" class="logo-img"
                              onerror="this.style.display='none'; this.parentElement.innerHTML = '<div style=\'font-size: 28px; font-weight: bold; color: #E2001A;\'>J&T Express</div>';">
                     </td>
                     <td class="titulo-cell">
@@ -473,7 +488,8 @@
                         <div class="data-valor" id="data-hoje"></div>
                     </td>
                 </tr>
-                <!-- Linha 2: Base Origem, Base Destino (ATUALIZADA com ID) --><tr>
+                <!-- Linha 2: Base Origem, Base Destino (ATUALIZADA com ID) -->
+                <tr>
                     <td colspan="2">
                         <strong>Base Origem:</strong> <span class="texto-vermelho">SC GYN (GO GYN)</span>
                     </td>
@@ -481,14 +497,16 @@
                         <strong>Base Destino:</strong> <span class="texto-vermelho" id="headerBaseDestino">MERCADO LIVRE - MELI</span>
                     </td>
                 </tr>
-                <!-- Linha 3: Campos (Natureza ATUALIZADA com ID) --><tr>
+                <!-- Linha 3: Campos (Natureza ATUALIZADA com ID) -->
+                <tr>
                     <td>
                         <div class="label-cinza">ID LACRE/ID VIAGEM</div>
                         <div class="valor-campo" id="headerLacre">&nbsp;</div>
                     </td>
                     <td style="text-align: center;"> 
                         <div class="label-cinza">Natureza:</div>
-                        <!-- NOVO ID para Natureza --><div class="valor-campo" id="headerNatureza">DEVOLUÇÃO AO EMBARCADOR</div>
+                        <!-- NOVO ID para Natureza -->
+                        <div class="valor-campo" id="headerNatureza">DEVOLUÇÃO AO EMBARCADOR</div>
                     </td>
                     <td>
                         <table class="tabela-interna">
@@ -497,7 +515,8 @@
                                 <td class="label-cinza">PLACA VEICULO</td>
                             </tr>
                             <tr>
-                                <!-- ID "headerQtd" será preenchido pelo script --><td class="valor-campo texto-vermelho" id="headerQtd" style="font-size: 1.2em; font-weight: bold;">&nbsp;</td>
+                                <!-- ID "headerQtd" será preenchido pelo script -->
+                                <td class="valor-campo texto-vermelho" id="headerQtd" style="font-size: 1.2em; font-weight: bold;">&nbsp;</td>
                                 <td class="valor-campo" id="headerPlaca">&nbsp;</td>
                             </tr>
                         </table>
@@ -505,18 +524,24 @@
                 </tr>
             </table>
             
-            <!-- Fechando a tag <header> --></header>
-        <!-- Fim do Cabeçalho --><!-- 
+            <!-- Fechando a tag <header> -->
+        </header>
+        <!-- Fim do Cabeçalho -->
+
+        <!-- 
           ***************************************************
           * *
           * CONTEÚDO PRINCIPAL: TABELA DE CÓDIGOS           *
           * *
           ***************************************************
-        --><main class="conteudo">
-            <!-- Marcas d'água --><div class="watermark" id="wm-pagina1">Página 1</div>
+        -->
+        <main class="conteudo">
+            <!-- Marcas d'água -->
+            <div class="watermark" id="wm-pagina1">Página 1</div>
             <div class="watermark" id="wm-pagina2">Página 2</div>
 
-            <!-- Tabela de Códigos --><table class="tabela-romaneio">
+            <!-- Tabela de Códigos -->
+            <table class="tabela-romaneio">
                 <tbody id="tabela-corpo">
                     <tr class="placeholder">
                         <td colspan="4">Cole os códigos na caixa acima e clique em "Gerar Romaneio"</td>
@@ -524,14 +549,18 @@
                 </tbody>
             </table>
         </main>
-        <!-- Fim do Conteúdo Principal --><!-- 
+        <!-- Fim do Conteúdo Principal -->
+
+        <!-- 
           ***************************************************
           * *
           * RODAPÉ                                          *
           * *
           ***************************************************
-        --><footer class="rodape">
-            <!-- Tabela de Assinaturas (Rodapé) --><table class="tabela-rodape">
+        -->
+        <footer class="rodape">
+            <!-- Tabela de Assinaturas (Rodapé) -->
+            <table class="tabela-rodape">
                 <tr>
                     <td class="label-cinza-rodape">Assinatura Emitente</td>
                     <td class="label-cinza-rodape">Assinatura Motorista:</td>
@@ -546,15 +575,21 @@
                 </tr>
             </table>
 
-            <!-- Barra vermelha final --><div class="barra-vermelha-final"></div>
+            <!-- Barra vermelha final -->
+            <div class="barra-vermelha-final"></div>
         </footer>
-        <!-- Fim do Rodapé --></div> <!-- Fim da .pagina --><!--
+        <!-- Fim do Rodapé -->
+
+    </div> <!-- Fim da .pagina -->
+
+    <!--
       ***************************************************
       * *
-      * SCRIPT JAVASCRIPT (LÓGICA INALTERADA)           *
+      * SCRIPT JAVASCRIPT (LÓGICA ATUALIZADA)           *
       * *
       ***************************************************
-    --><script>
+    -->
+    <script>
         // Caractere de espaço que não quebra linha (&nbsp; em HTML)
         const nbsp = '\u00A0'; 
 
@@ -563,6 +598,7 @@
             // Novas leituras
             const selectNatureza = document.getElementById('selectNatureza').value;
             const inputBaseDestino = document.getElementById('inputBaseDestino').value;
+            const inputData = document.getElementById('inputData').value;
 
             // Leituras existentes
             const inputLacre = document.getElementById('inputLacre').value;
@@ -576,7 +612,20 @@
             document.getElementById('headerBaseDestino').textContent = inputBaseDestino || nbsp;
             document.getElementById('headerLacre').textContent = inputLacre || nbsp;
             document.getElementById('headerPlaca').textContent = inputPlaca || nbsp;
-            document.getElementById('headerQtd').textContent = totalCodigos > 0 ? totalCodigos : nbsp;  
+            document.getElementById('headerQtd').textContent = totalCodigos > 0 ? totalCodigos : nbsp;
+
+            // Atualiza a DATA FORMATADA (converte de YYYY-MM-DD para DD/MM/AAAA)
+            if (inputData) {
+                const partes = inputData.split('-'); // [Ano, Mes, Dia]
+                if (partes.length === 3) {
+                    const dia = partes[2];
+                    const mes = partes[1];
+                    const ano = partes[0];
+                    document.getElementById('data-hoje').textContent = `${dia}/${mes}/${ano}`;
+                }
+            } else {
+                 document.getElementById('data-hoje').textContent = nbsp;
+            }
         }
 
 
@@ -625,26 +674,31 @@
             window.print();
         }
         
-        // --- Função para formatar a data de hoje ---
-        function carregarDataHoje() {
+        // --- Função para carregar a data de hoje no INPUT DATE ---
+        function carregarDataInicial() {
             const hoje = new Date();
+            // Formato para input type="date" deve ser YYYY-MM-DD
             const dia = String(hoje.getDate()).padStart(2, '0');
-            const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // Meses começam do 0
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
             const ano = hoje.getFullYear();
-            document.getElementById('data-hoje').textContent = `${dia}/${mes}/${ano}`;
+            
+            const inputData = document.getElementById('inputData');
+            inputData.value = `${ano}-${mes}-${dia}`;
         }
         
         // --- Inicialização da Aplicação ---
         function init() {
-            carregarDataHoje();
+            carregarDataInicial();
             // Preenche o cabeçalho com os valores padrão ao carregar a página
             atualizarCabecalho(); 
             
-            // Adiciona listeners para Natureza e Base Destino para atualizar dinamicamente
+            // Adiciona listeners para os campos atualizarem dinamicamente
             document.getElementById('selectNatureza').addEventListener('change', atualizarCabecalho);
             document.getElementById('inputBaseDestino').addEventListener('input', atualizarCabecalho);
             document.getElementById('inputLacre').addEventListener('input', atualizarCabecalho);
             document.getElementById('inputPlaca').addEventListener('input', atualizarCabecalho);
+            // Novo listener para a data
+            document.getElementById('inputData').addEventListener('change', atualizarCabecalho);
             
             // Adiciona listeners para os botões existentes
             document.getElementById('btnGerar').addEventListener('click', gerarTabela);
